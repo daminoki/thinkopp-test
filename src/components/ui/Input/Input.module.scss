@@ -1,0 +1,40 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    &__label {
+        font-family: var(--font-helvetica-neue-sans);
+        font-size: 15px;
+        line-height: 100%;
+        font-weight: 400;
+        color: var(--typo-dark);
+    }
+
+    &__input {
+        @include transition(border-color);
+
+        padding: 18px 18px 19px;
+        border: 1px solid var(--input-border-color);
+        border-radius: 6px;
+        font-family: var(--font-helvetica-neue-sans);
+        font-size: 15px;
+        line-height: 100%;
+        font-weight: 400;
+        color: var(--typo-dark);
+
+        &::placeholder {
+            opacity: .4;
+        }
+
+        @media (hover: hover) {
+            &:hover {
+                border-color: var(--input-border-color-hover);
+            }
+        }
+
+        &:focus {
+            border-color: var(--input-border-color-hover);
+        }
+    }
+}

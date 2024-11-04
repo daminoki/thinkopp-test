@@ -1,0 +1,19 @@
+.button {
+    @include button;
+    @include transition(border-color);
+
+    color: var(--typo-dark);
+    border: 1px solid var(--button-border-color);
+    border-radius: 41px;
+    padding: 13px 19px 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    @media (hover: hover) {
+        &:hover {
+            border-color: var(--button-border-color-hover);
+        }
+    }
+}

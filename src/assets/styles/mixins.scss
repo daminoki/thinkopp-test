@@ -16,3 +16,38 @@
         @content;
     }
 }
+
+@mixin container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    width: 100%;
+}
+
+@mixin h1 {
+    font-family: var(--font-inter-tight-sans);
+    font-size: 48px;
+    line-height: 120%;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+@mixin button {
+    font-family: var(--font-helvetica-sans);
+    font-size: 16px;
+    line-height: 100%;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+}
+
+@mixin transition($properties...) {
+    $unfoldedTransitions: ();
+    @each $property in $properties {
+      $unfoldedTransitions: append($unfoldedTransitions, $property + ' 0.2s ease-in-out', comma);
+    }
+    
+    -webkit-transition: $unfoldedTransitions;
+    transition: $unfoldedTransitions;
+}  
