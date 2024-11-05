@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
+import Pagination from '@/components/ui/Pagination';
 import { FormData } from './entities/form';
 
 export default function Home() {
@@ -166,11 +167,6 @@ export default function Home() {
 
   return (
     <div className={styles.form}>
-      {JSON.stringify(formData)}
-      <br />
-      {JSON.stringify(errors)}
-      <br />
-      {JSON.stringify(isFormValid)}
       <form className={styles.form__content} onSubmit={handleSubmit}>
         <div className={styles.form__header}>
           <h1 className={styles.form__title}>Производственные параметры фильма</h1>
@@ -255,6 +251,17 @@ export default function Home() {
         </div>
 
         <div className={styles.form__footer}>
+          <Button className={styles.form__back} type="button">
+            <Image
+              src={ArrowIcon}
+              alt="Arrow icon"
+              width={16}
+              height={16}
+              className={styles['form__back-icon']}
+            />
+            Предыдущий шаг
+          </Button>
+          <Pagination pageNumber={1} totalPages={4} className={styles.form__pagination} />
           <Button className={styles.form__submit} type="submit" disabled={!isFormValid}>
             Следующий шаг
             <Image

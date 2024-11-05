@@ -48,7 +48,15 @@
     }
 
     &__footer {
+        @include tablet {
+            padding: 40px 0;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         padding: 98px 0;
+        display: flex;
+        gap: 16px;
     }
 
     &__submit {
@@ -58,8 +66,27 @@
         align-items: center;
     }
 
+    &__back {
+        min-width: 248px;
+        display: grid !important;
+        grid-template-columns: 16px 1fr;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+    }
+
     &__submit-icon {
         width: 16px;
         height: 16px;
+    }
+
+    &__back-icon {
+       transform: rotate(180deg);
+    }
+
+    &__pagination {
+        align-self: center;
+        flex: 1;
     }
 }
