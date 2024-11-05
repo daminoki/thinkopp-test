@@ -1,4 +1,5 @@
 import { IMaskInput } from 'react-imask';
+import classnames from 'classnames';
 
 import styles from './Input.module.scss';
 
@@ -10,6 +11,7 @@ interface InputProps {
   labelText?: string;
   type?: string;
   mask?: string;
+  error?: string;
 }
 
 const Input = ({
@@ -20,6 +22,7 @@ const Input = ({
   labelText,
   type = 'text',
   mask,
+  error,
 }: InputProps) => {
   return (
     <div className={styles.field}>
@@ -31,7 +34,9 @@ const Input = ({
         <IMaskInput
           placeholder={placeholder}
           value={(value as string) ?? ''}
-          className={styles.field__input}
+          className={classnames(styles.field__input, {
+            [styles.field__input_error]: error,
+          })}
           name={name}
           mask={mask}
           onAccept={(value: string) =>
@@ -42,12 +47,16 @@ const Input = ({
         <input
           placeholder={placeholder}
           value={value ?? ''}
-          className={styles.field__input}
+          className={classnames(styles.field__input, {
+            [styles.field__input_error]: error,
+          })}
           onChange={onChange}
           name={name}
           type={type}
         />
       )}
+
+      {error && <span className={styles.field__error}>{error}</span>}
     </div>
   );
 };

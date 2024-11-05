@@ -40,6 +40,10 @@
         &_filled {
             color: var(--typo-dark)
         }
+
+        &_error {
+            border-color: var(--typo-error);
+        }
     }
 
     &__body {
@@ -79,5 +83,13 @@
         label {
             margin: 4px 0 0;
         }
+    }
+
+    &__error {
+        font-family: var(--font-helvetica-neue-sans);
+        font-size: 14px;
+        line-height: 120%;
+        font-weight: 400;
+        color: var(--typo-error);
     }
 }

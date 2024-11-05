@@ -10,6 +10,7 @@ interface SelectProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   selectedOptions: string[];
+  error?: string;
 }
 
 const Select = ({
@@ -18,6 +19,7 @@ const Select = ({
   onChange,
   placeholder,
   selectedOptions,
+  error,
 }: SelectProps) => {
   const [isOpened, setIsOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -40,15 +42,16 @@ const Select = ({
   }, []);
 
   return (
-    <div className={styles.select} ref={selectRef}>
+    <div className={styles.select}>
       <p className={styles.select__title}>{title}</p>
 
-      <div className={styles.select__element}>
+      <div className={styles.select__element} ref={selectRef}>
         <button
           type="button"
           className={classnames(styles.select__header, {
             [styles.select__header_opened]: isOpened,
             [styles.select__header_filled]: selectedOptions.length > 0,
+            [styles.select__header_error]: error,
           })}
           onClick={handleSelectClick}
         >
@@ -70,6 +73,7 @@ const Select = ({
                   name={option}
                   value={option}
                   onChange={onChange}
+                  checked={selectedOptions.includes(option)}
                 />
                 <label htmlFor={option} className={styles.select__label}>
                   {option}
@@ -79,6 +83,8 @@ const Select = ({
           </ul>
         </div>
       </div>
+
+      {error && <span className={styles.select__error}>{error}</span>}
     </div>
   );
 };

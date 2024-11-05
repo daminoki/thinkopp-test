@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 import ArrowIcon from '@/assets/images/icons/arrow-icon.svg';
@@ -21,6 +21,22 @@ export default function Home() {
     price: null,
     synopsis: null,
   });
+  const [errors, setErrors] = useState({
+    title: '',
+    genres: '',
+    formats: '',
+    unf: '',
+    countries: '',
+  });
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    const savedFormData = localStorage.getItem('formData');
+
+    if (savedFormData) {
+      setFormData(JSON.parse(savedFormData));
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,6 +45,8 @@ export default function Home() {
       ...formData,
       [name]: value,
     });
+
+    validateField(name, value);
   };
 
   const handleCheckboxChange = (
@@ -37,13 +55,16 @@ export default function Home() {
   ) => {
     const { name, checked } = e.target;
 
+    const updatedCategory = checked
+      ? [...formData[category], name]
+      : formData[category].filter((item) => item !== name);
+
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [category]:
-        checked && !prevFormData.genres.includes(name)
-          ? [...prevFormData[category], name]
-          : prevFormData[category].filter((item) => item !== name),
+      [category]: updatedCategory,
     }));
+
+    validateField(category, updatedCategory);
   };
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -53,20 +74,109 @@ export default function Home() {
       ...formData,
       [name]: value,
     });
+
+    validateField(name, value);
   };
+
+  const validateField = (name: string, value: string | string[]) => {
+    let error = '';
+
+    switch (name) {
+      case 'title':
+        if (typeof value === 'string' && value.trim() === '') {
+          error = 'Заполните поле';
+        }
+        break;
+      case 'genres':
+      case 'formats':
+      case 'countries':
+        if (value.length === 0) {
+          error = 'Заполните поле';
+        }
+        break;
+      case 'unf':
+        if (
+          typeof value === 'string' &&
+          value &&
+          !/^(\d{3}-\d{3}-\d{3}-\d{2}-\d{3})?$/.test(value)
+        ) {
+          error = 'Неверный формат';
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
+
+    validateForm();
+  };
+
+  const validateForm = () => {
+    const { title, genres, formats, countries, unf } = formData;
+
+    const isTitleValid = title.trim() !== '';
+    const isGenresValid = genres.length > 0;
+    const isFormatsValid = formats.length > 0;
+    const isCountriesValid = countries.length > 0;
+    const isUnfValid = !unf || /^(\d{3}-\d{3}-\d{3}-\d{2}-\d{3})?$/.test(unf);
+
+    setIsFormValid(
+      isTitleValid && isGenresValid && isFormatsValid && isCountriesValid && isUnfValid,
+    );
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [formData]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form data:', formData);
+
+    if (isFormValid) {
+      console.log('Form data:', formData);
+
+      localStorage.setItem('formData', JSON.stringify(formData));
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      title: '',
+      genres: [],
+      formats: [],
+      unf: null,
+      countries: [],
+      price: null,
+      synopsis: null,
+    });
+    setErrors({
+      title: '',
+      genres: '',
+      formats: '',
+      unf: '',
+      countries: '',
+    });
+    setIsFormValid(false);
+    localStorage.removeItem('formData');
   };
 
   return (
     <div className={styles.form}>
       {JSON.stringify(formData)}
+      <br />
+      {JSON.stringify(errors)}
+      <br />
+      {JSON.stringify(isFormValid)}
       <form className={styles.form__content} onSubmit={handleSubmit}>
         <div className={styles.form__header}>
           <h1 className={styles.form__title}>Производственные параметры фильма</h1>
-          <Button className={styles.form__reset}>Отменить заполнение</Button>
+          <Button className={styles.form__reset} onClick={handleReset}>
+            Отменить заполнение
+          </Button>
         </div>
 
         <div className={styles.form__body}>
@@ -77,6 +187,7 @@ export default function Home() {
               value={formData.title}
               onChange={handleInputChange}
               name="title"
+              error={errors.title}
             />
 
             <Select
@@ -87,6 +198,7 @@ export default function Home() {
               }
               onChange={(e) => handleCheckboxChange(e, 'genres')}
               selectedOptions={formData.genres}
+              error={errors.genres}
             />
 
             <Select
@@ -97,6 +209,7 @@ export default function Home() {
               }
               onChange={(e) => handleCheckboxChange(e, 'formats')}
               selectedOptions={formData.formats}
+              error={errors.formats}
             />
 
             <Input
@@ -106,6 +219,7 @@ export default function Home() {
               onChange={handleInputChange}
               name="unf"
               mask="000-000-000-00-000"
+              error={errors.unf}
             />
           </div>
           <div className={styles.form__column}>
@@ -117,6 +231,7 @@ export default function Home() {
               }
               onChange={(e) => handleCheckboxChange(e, 'countries')}
               selectedOptions={formData.countries}
+              error={errors.countries}
             />
 
             <Input
@@ -140,7 +255,7 @@ export default function Home() {
         </div>
 
         <div className={styles.form__footer}>
-          <Button className={styles.form__submit} type="submit">
+          <Button className={styles.form__submit} type="submit" disabled={!isFormValid}>
             Следующий шаг
             <Image
               src={ArrowIcon}

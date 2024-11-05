@@ -37,5 +37,27 @@
         &:focus {
             border-color: var(--input-border-color-hover);
         }
+
+        &_error {
+            border-color: var(--typo-error);
+
+            @media (hover: hover) {
+                &:hover {
+                    border-color: var(--typo-error);
+                }
+            }
+    
+            &:focus {
+                border-color: var(--typo-error);
+            }
+        } 
+    }
+
+    &__error {
+        font-family: var(--font-helvetica-neue-sans);
+        font-size: 14px;
+        line-height: 120%;
+        font-weight: 400;
+        color: var(--typo-error);
     }
 }
