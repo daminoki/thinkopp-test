@@ -16,7 +16,7 @@ npm run dev
 * Node version: Node.js >= 20
 
 ## Deployment
-You can access the live demo at:
+You can access the live demo at: https://thinkopp-test-eight.vercel.app/
 
 ## Technologies Used
 * React
