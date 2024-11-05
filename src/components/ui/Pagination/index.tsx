@@ -8,12 +8,19 @@ interface PaginationProps {
   pageNumber: number;
   totalPages: number;
   className?: string;
+  onPageChange: (page: number) => void;
+  disabled?: boolean;
 }
 
-const Pagination = ({ pageNumber, totalPages, className }: PaginationProps) => {
+const Pagination = ({
+  pageNumber,
+  totalPages,
+  className,
+  onPageChange,
+  disabled,
+}: PaginationProps) => {
   const renderPaginationItems = () => {
     const items = [];
-
     items.push(1);
 
     if (totalPages <= 3) {
@@ -45,15 +52,29 @@ const Pagination = ({ pageNumber, totalPages, className }: PaginationProps) => {
 
   return (
     <div className={classnames(styles.pagination, className)}>
-      {pageNumber !== 1 && (
-        <button className={styles.pagination__button}>
+      {pageNumber > 1 && (
+        <button
+          className={classnames(
+            styles.pagination__button,
+            styles['pagination__button_prev'],
+          )}
+          onClick={() => onPageChange(pageNumber - 1)}
+          type="button"
+        >
           <Image src={ArrowIcon} alt="Предыдущий шаг" />
         </button>
       )}
       <div className={styles.pagination__pages}>{renderPaginationItems()}</div>
-      <button className={styles.pagination__button}>
-        <Image src={ArrowIcon} alt="Следующий шаг" />
-      </button>
+      {pageNumber < totalPages && (
+        <button
+          className={styles.pagination__button}
+          onClick={() => onPageChange(pageNumber + 1)}
+          type="button"
+          disabled={disabled}
+        >
+          <Image src={ArrowIcon} alt="Следующий шаг" />
+        </button>
+      )}
     </div>
   );
 };

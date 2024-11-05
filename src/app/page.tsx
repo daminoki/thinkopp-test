@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import classnames from 'classnames';
 
 import ArrowIcon from '@/assets/images/icons/arrow-icon.svg';
 import styles from './page.module.scss';
@@ -11,17 +12,11 @@ import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Pagination from '@/components/ui/Pagination';
 import { FormData } from './entities/form';
+import { validateField, resetFormData } from '@/utils/formUtils';
 
 export default function Home() {
-  const [formData, setFormData] = useState<FormData>({
-    title: '',
-    genres: [],
-    formats: [],
-    unf: null,
-    countries: [],
-    price: null,
-    synopsis: null,
-  });
+  const [formData, setFormData] = useState<FormData>(resetFormData());
+
   const [errors, setErrors] = useState({
     title: '',
     genres: '',
@@ -29,7 +24,10 @@ export default function Home() {
     unf: '',
     countries: '',
   });
+
   const [isFormValid, setIsFormValid] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 4;
 
   useEffect(() => {
     const savedFormData = localStorage.getItem('formData');
@@ -47,7 +45,12 @@ export default function Home() {
       [name]: value,
     });
 
-    validateField(name, value);
+    const error = validateField(name, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
+    validateForm();
   };
 
   const handleCheckboxChange = (
@@ -65,7 +68,12 @@ export default function Home() {
       [category]: updatedCategory,
     }));
 
-    validateField(category, updatedCategory);
+    const error = validateField(category, updatedCategory);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [category]: error,
+    }));
+    validateForm();
   };
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -76,43 +84,11 @@ export default function Home() {
       [name]: value,
     });
 
-    validateField(name, value);
-  };
-
-  const validateField = (name: string, value: string | string[]) => {
-    let error = '';
-
-    switch (name) {
-      case 'title':
-        if (typeof value === 'string' && value.trim() === '') {
-          error = 'Заполните поле';
-        }
-        break;
-      case 'genres':
-      case 'formats':
-      case 'countries':
-        if (value.length === 0) {
-          error = 'Заполните поле';
-        }
-        break;
-      case 'unf':
-        if (
-          typeof value === 'string' &&
-          value &&
-          !/^(\d{3}-\d{3}-\d{3}-\d{2}-\d{3})?$/.test(value)
-        ) {
-          error = 'Неверный формат';
-        }
-        break;
-      default:
-        break;
-    }
-
+    const error = validateField(name, value);
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: error,
     }));
-
     validateForm();
   };
 
@@ -141,19 +117,14 @@ export default function Home() {
       console.log('Form data:', formData);
 
       localStorage.setItem('formData', JSON.stringify(formData));
+
+      handleNextPage();
     }
   };
 
   const handleReset = () => {
-    setFormData({
-      title: '',
-      genres: [],
-      formats: [],
-      unf: null,
-      countries: [],
-      price: null,
-      synopsis: null,
-    });
+    setFormData(resetFormData());
+
     setErrors({
       title: '',
       genres: '',
@@ -161,8 +132,31 @@ export default function Home() {
       unf: '',
       countries: '',
     });
+
     setIsFormValid(false);
+
     localStorage.removeItem('formData');
+
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= 4) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < 4) {
+      handlePageChange(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    console.log(1);
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
   };
 
   return (
@@ -175,83 +169,94 @@ export default function Home() {
           </Button>
         </div>
 
-        <div className={styles.form__body}>
-          <div className={styles.form__column}>
-            <Input
-              placeholder="Название"
-              labelText="Название проекта"
-              value={formData.title}
-              onChange={handleInputChange}
-              name="title"
-              error={errors.title}
-            />
+        {currentPage === 1 && (
+          <div className={styles.form__body}>
+            <div className={styles.form__column}>
+              <Input
+                placeholder="Название"
+                labelText="Название проекта"
+                value={formData.title}
+                onChange={handleInputChange}
+                name="title"
+                error={errors.title}
+              />
 
-            <Select
-              title="Жанр"
-              options={['Комедия', 'Драма', 'Триллер']}
-              placeholder={
-                formData.genres.length > 0 ? formData.genres.join(', ') : 'Жанр'
-              }
-              onChange={(e) => handleCheckboxChange(e, 'genres')}
-              selectedOptions={formData.genres}
-              error={errors.genres}
-            />
+              <Select
+                title="Жанр"
+                options={['Комедия', 'Драма', 'Триллер']}
+                placeholder={
+                  formData.genres.length > 0 ? formData.genres.join(', ') : 'Жанр'
+                }
+                onChange={(e) => handleCheckboxChange(e, 'genres')}
+                selectedOptions={formData.genres}
+                error={errors.genres}
+              />
 
-            <Select
-              title="Формат (для онлайн-платформ, большого экрана, интернета, другое)"
-              options={['Онлайн-платформа', 'Большой экран', 'Интернет']}
-              placeholder={
-                formData.formats.length > 0 ? formData.formats.join(', ') : 'Формат'
-              }
-              onChange={(e) => handleCheckboxChange(e, 'formats')}
-              selectedOptions={formData.formats}
-              error={errors.formats}
-            />
+              <Select
+                title="Формат (для онлайн-платформ, большого экрана, интернета, другое)"
+                options={['Онлайн-платформа', 'Большой экран', 'Интернет']}
+                placeholder={
+                  formData.formats.length > 0 ? formData.formats.join(', ') : 'Формат'
+                }
+                onChange={(e) => handleCheckboxChange(e, 'formats')}
+                selectedOptions={formData.formats}
+                error={errors.formats}
+              />
 
-            <Input
-              placeholder="890-000-000-00-000"
-              labelText="№ УНФ или отсутствует"
-              value={formData.unf}
-              onChange={handleInputChange}
-              name="unf"
-              mask="000-000-000-00-000"
-              error={errors.unf}
-            />
+              <Input
+                placeholder="890-000-000-00-000"
+                labelText="№ УНФ или отсутствует"
+                value={formData.unf}
+                onChange={handleInputChange}
+                name="unf"
+                mask="000-000-000-00-000"
+                error={errors.unf}
+              />
+            </div>
+            <div className={styles.form__column}>
+              <Select
+                title="Страна-производитель (копродукция)"
+                options={['Россия', 'Казахстан', 'Франция']}
+                placeholder={
+                  formData.countries.length > 0 ? formData.countries.join(', ') : 'Страна'
+                }
+                onChange={(e) => handleCheckboxChange(e, 'countries')}
+                selectedOptions={formData.countries}
+                error={errors.countries}
+              />
+
+              <Input
+                placeholder="Сметная стоимость"
+                labelText="Сведения о сметной стоимости производства фильма 
+            на территории Нижегородской области, если есть"
+                value={formData.price}
+                onChange={handleInputChange}
+                name="price"
+                type="number"
+              />
+
+              <Textarea
+                placeholder="Напишите краткое изложение"
+                labelText="Синопсис"
+                value={formData.synopsis}
+                onChange={handleTextareaChange}
+                name="synopsis"
+              />
+            </div>
           </div>
-          <div className={styles.form__column}>
-            <Select
-              title="Страна-производитель (копродукция)"
-              options={['Россия', 'Казахстан', 'Франция']}
-              placeholder={
-                formData.countries.length > 0 ? formData.countries.join(', ') : 'Страна'
-              }
-              onChange={(e) => handleCheckboxChange(e, 'countries')}
-              selectedOptions={formData.countries}
-              error={errors.countries}
-            />
+        )}
 
-            <Input
-              placeholder="Сметная стоимость"
-              labelText="Сведения о сметной стоимости производства фильма 
-              на территории Нижегородской области, если есть"
-              value={formData.price}
-              onChange={handleInputChange}
-              name="price"
-              type="number"
-            />
-
-            <Textarea
-              placeholder="Напишите краткое изложение"
-              labelText="Синопсис"
-              value={formData.synopsis}
-              onChange={handleTextareaChange}
-              name="synopsis"
-            />
-          </div>
-        </div>
+        {currentPage === 2 && <div>Содержимое следующего шага</div>}
 
         <div className={styles.form__footer}>
-          <Button className={styles.form__back} type="button">
+          <Button
+            className={classnames(
+              styles.form__back,
+              currentPage > 1 && styles['form__back_visible'],
+            )}
+            type="button"
+            onClick={handlePreviousPage}
+          >
             <Image
               src={ArrowIcon}
               alt="Arrow icon"
@@ -261,8 +266,20 @@ export default function Home() {
             />
             Предыдущий шаг
           </Button>
-          <Pagination pageNumber={1} totalPages={4} className={styles.form__pagination} />
-          <Button className={styles.form__submit} type="submit" disabled={!isFormValid}>
+
+          <Pagination
+            pageNumber={currentPage}
+            totalPages={totalPages}
+            className={styles.form__pagination}
+            onPageChange={handlePageChange}
+            disabled={!isFormValid || currentPage !== 1}
+          />
+
+          <Button
+            className={styles.form__submit}
+            type="submit"
+            disabled={!isFormValid || currentPage !== 1}
+          >
             Следующий шаг
             <Image
               src={ArrowIcon}

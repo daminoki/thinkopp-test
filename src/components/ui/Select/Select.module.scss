@@ -32,9 +32,21 @@
         width: 100%;
         text-align: start;
 
+        @media (hover:hover) {
+            &:hover {
+                border-color: var(--input-border-color-hover);
+            }
+        }
+
         &_opened {
             border-radius: 6px 6px 0 0;
             color: var(--typo-dark);
+
+            @media (hover:hover) {
+                &:hover {
+                    border-color: var(--input-border-color);
+                }
+            }
         }
 
         &_filled {

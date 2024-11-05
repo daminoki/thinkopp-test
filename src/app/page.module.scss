@@ -74,6 +74,12 @@
         opacity: 0;
         pointer-events: none;
         visibility: hidden;
+
+        &_visible {
+            opacity: 1;
+            pointer-events: initial;
+            visibility: visible;
+        }
     }
 
     &__submit-icon {

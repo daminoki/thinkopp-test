@@ -35,5 +35,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
+
+        &_prev {
+            transform: rotate(180deg);
+        }
+
+        &:disabled {
+            pointer-events: none;
+            opacity: .4;
+        }
     }
 }
