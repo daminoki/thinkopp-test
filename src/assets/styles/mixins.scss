@@ -25,6 +25,10 @@
 }
 
 @mixin h1 {
+    @include tablet {
+        font-size: 32px;
+    }
+    
     font-family: var(--font-inter-tight-sans);
     font-size: 48px;
     line-height: 120%;

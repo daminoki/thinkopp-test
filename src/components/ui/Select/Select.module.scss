@@ -6,10 +6,11 @@
 
     &__title {
         font-family: var(--font-helvetica-neue-sans);
-        font-size: 15px;
-        line-height: 100%;
+        font-size: 16px;
+        line-height: 19px;
         font-weight: 400;
         color: var(--typo-dark);
+        opacity: .7;
     }
 
     &__element {

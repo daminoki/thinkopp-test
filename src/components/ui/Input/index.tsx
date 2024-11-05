@@ -1,12 +1,15 @@
+import { IMaskInput } from 'react-imask';
+
 import styles from './Input.module.scss';
 
 interface InputProps {
   placeholder?: string;
   value?: string | number | null;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
   labelText?: string;
   type?: string;
+  mask?: string;
 }
 
 const Input = ({
@@ -16,6 +19,7 @@ const Input = ({
   name,
   labelText,
   type = 'text',
+  mask,
 }: InputProps) => {
   return (
     <div className={styles.field}>
@@ -23,14 +27,27 @@ const Input = ({
         {labelText}
       </label>
 
-      <input
-        placeholder={placeholder}
-        value={value ?? ''}
-        className={styles.field__input}
-        onChange={onChange}
-        name={name}
-        type={type}
-      />
+      {mask ? (
+        <IMaskInput
+          placeholder={placeholder}
+          value={(value as string) ?? ''}
+          className={styles.field__input}
+          name={name}
+          mask={mask}
+          onAccept={(value: string) =>
+            onChange({ target: { name, value } } as React.ChangeEvent<HTMLInputElement>)
+          }
+        />
+      ) : (
+        <input
+          placeholder={placeholder}
+          value={value ?? ''}
+          className={styles.field__input}
+          onChange={onChange}
+          name={name}
+          type={type}
+        />
+      )}
     </div>
   );
 };

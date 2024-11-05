@@ -2,6 +2,11 @@
     @include container;
 
     &__header {
+        @include tablet {
+            padding: 80px 0 60px;
+            flex-direction: column;
+        }
+
         padding: 80px 0 112px;
         display: flex;
         justify-content: space-between;
@@ -16,11 +21,20 @@
     }
 
     &__reset {
+        @include tablet {
+           align-self: end;
+        }
+
         width: 225px;
         margin: 22px 0 0;
     }
 
     &__body {
+        @include tablet {
+            flex-direction: column;
+            gap: 25px;
+        }
+
         display: flex;
         gap: 123px;
     }
@@ -30,5 +44,22 @@
         display: flex;
         flex-direction: column;
         gap: 25px;
+        justify-content: space-between;
+    }
+
+    &__footer {
+        padding: 98px 0;
+    }
+
+    &__submit {
+        min-width: 248px;
+        display: grid !important;
+        grid-template-columns: 1fr 16px;
+        align-items: center;
+    }
+
+    &__submit-icon {
+        width: 16px;
+        height: 16px;
     }
 }

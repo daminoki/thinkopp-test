@@ -12,7 +12,7 @@
         opacity: .7;
     }
 
-    &__input {
+    &__textarea {
         @include transition(border-color);
 
         padding: 18px 18px 19px;
@@ -23,6 +23,7 @@
         line-height: 100%;
         font-weight: 400;
         color: var(--typo-dark);
+        min-height: 157px;
 
         &::placeholder {
             opacity: .4;
